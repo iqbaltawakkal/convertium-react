@@ -26,5 +26,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/dashboard', ...PUBLIC_ROUTES], // Apply middleware to all routes under /dashboard
+    matcher: ['/dashboard', '/login', '/register', '/'], // Apply middleware to all routes under /dashboard
 };
