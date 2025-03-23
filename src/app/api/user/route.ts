@@ -23,12 +23,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({
-      salutation: user.salutation,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    }, { status: 200 });
+    return NextResponse.json(user, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }

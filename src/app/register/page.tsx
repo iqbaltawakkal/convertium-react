@@ -4,14 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoaderIcon } from "lucide-react";
@@ -19,25 +11,24 @@ import { Particles } from "@/components/magicui/particles";
 import { toast } from "sonner";
 
 export default function Register() {
-  const [salutation, setSalutation] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      toast("Password and confirm password does not match");
+      return;
+    }
     try {
       setIsLoading(true);
       const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          salutation,
-          firstName,
-          lastName,
           email,
           password,
         }),
@@ -45,6 +36,7 @@ export default function Register() {
 
       if (response.ok) {
         router.push("/dashboard");
+        toast("Register successful, you`re now logged in");
       } else {
         const data = await response.json();
         throw Error(data.message);
@@ -98,50 +90,18 @@ export default function Register() {
                 />
               </div>
               <div className="grid gap-1">
-                <Label className="sr-only"> First name </Label>
+                <Label className="sr-only"> Confirm password </Label>
                 <Input
-                  id="first-name"
-                  type="text"
-                  placeholder="First name"
+                  id="password"
+                  type="password"
+                  placeholder="Confirm password"
                   auto-capitalize="none"
                   auto-correct="off"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   className="bg-white"
                 />
-              </div>
-              <div className="grid gap-1">
-                <Label className="sr-only"> Last name </Label>
-                <Input
-                  id="last-name"
-                  type="text"
-                  placeholder="Last name"
-                  auto-capitalize="none"
-                  auto-correct="off"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  required
-                  className="bg-white"
-                />
-              </div>
-              <div className="grid gap-1">
-                <Label className="sr-only"> Salutation </Label>
-                <Select
-                  value={salutation}
-                  onValueChange={(e) => setSalutation(e)}
-                  required
-                >
-                  <SelectTrigger className="bg-white w-full">
-                    <SelectValue placeholder="Select salutation" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="Mr.">Mr.</SelectItem>
-                      <SelectItem value="Mrs.">Mrs.</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
               </div>
               <Button type="submit" className="mt-4">
                 {isLoading && (

@@ -8,10 +8,23 @@ datasource db {
 }
 
 model User {
-  id         Int    @id @default(autoincrement())
-  email      String @unique
-  password   String
-  firstName  String
-  lastName   String
-  salutation String
+  id               Int     @id @default(autoincrement())
+  email            String  @unique
+  password         String
+  firstName        String? @default("")
+  lastName         String? @default("")
+  salutation       String? @default("")
+  address          String? @default("")
+  country          String? @default("")
+  postalCode       String? @default("")
+  dateOfBirth      String? @default("")
+  gender           String? @default("")
+  maritalStatus    String? @default("")
+  spouseFirstName  String? @default("")
+  spouseLastName   String? @default("")
+  spouseSalutation String? @default("")
+  hobbiesInterests String? @default("")
+  favoriteSport    String? @default("")
+  preferredMusic   String? @default("")
+  preferredMovie   String? @default("")
 }

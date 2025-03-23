@@ -1,0 +1,17 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "firstName" SET DEFAULT '',
+ALTER COLUMN "lastName" SET DEFAULT '',
+ALTER COLUMN "salutation" SET DEFAULT '',
+ALTER COLUMN "address" SET DEFAULT '',
+ALTER COLUMN "country" SET DEFAULT '',
+ALTER COLUMN "dateOfBirth" SET DEFAULT '',
+ALTER COLUMN "favoriteSport" SET DEFAULT '',
+ALTER COLUMN "gender" SET DEFAULT '',
+ALTER COLUMN "hobbiesInterests" SET DEFAULT '',
+ALTER COLUMN "maritalStatus" SET DEFAULT '',
+ALTER COLUMN "postalCode" SET DEFAULT '',
+ALTER COLUMN "preferredMovie" SET DEFAULT '',
+ALTER COLUMN "preferredMusic" SET DEFAULT '',
+ALTER COLUMN "spouseFirstName" SET DEFAULT '',
+ALTER COLUMN "spouseLastName" SET DEFAULT '',
+ALTER COLUMN "spouseSalutation" SET DEFAULT '';

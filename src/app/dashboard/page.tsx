@@ -13,55 +13,55 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, MenuIcon } from "lucide-react";
+import { ChevronDown, MenuIcon, Pencil } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
 import { Particles } from "@/components/magicui/particles";
+import { User } from "@/lib/types";
+import FormPersonal from "@/components/FormPersonal";
+import FormBasic from "@/components/FormBasic";
+import FormSpouse from "@/components/FormSpouse";
+import FormAdditional from "@/components/FormAdditional";
 
 export default function Dashboard() {
-  const [user, setUser] = useState<{
-    salutation: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  } | null>(null);
+  const [user, setUser] = useState<User>();
+  const [section, setSection] = useState("basic");
+  const [isEdit, setIsEdit] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
 
   interface Item {
     title: string;
-    href: string;
+    section: string;
   }
   const sidebarNavItems: Item[] = [
     {
       title: "Basic details",
-      href: "/dashboard",
+      section: "basic",
     },
     {
       title: "Additional details",
-      href: "/examples/forms/account",
+      section: "additional",
     },
     {
       title: "Spouse details",
-      href: "/examples/forms/appearance",
+      section: "spouse",
     },
     {
       title: "Personal preference",
-      href: "/examples/forms/notifications",
+      section: "personal",
     },
   ];
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const response = await fetch("/api/user");
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data);
-      }
-    };
+  const fetchUser = async () => {
+    const response = await fetch("/api/user");
+    if (response.ok) {
+      const data = await response.json();
+      setUser(data);
+    }
+  };
 
+  useEffect(() => {
     fetchUser();
   }, [router]);
 
@@ -86,8 +86,10 @@ export default function Dashboard() {
                   {sidebarNavItems.map((item) => (
                     <DropdownMenuItem
                       key={item.title}
+                      onClick={() => setSection(item.section)}
                       className={cn(
-                        pathname === item.href && "bg-muted hover:bg-muted"
+                        section === item.section && "bg-muted hover:bg-muted",
+                        "cursor-pointer"
                       )}
                     >
                       {item.title}
@@ -140,6 +142,11 @@ export default function Dashboard() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem> Home </DropdownMenuItem>
+                  <DropdownMenuItem> My profile </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   Log out
                   <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
@@ -157,9 +164,11 @@ export default function Dashboard() {
                 <Button
                   key={item.title}
                   variant="ghost"
+                  onClick={() => setSection(item.section)}
                   className={cn(
                     "text-left justify-start",
-                    pathname === item.href && "bg-muted hover:bg-muted"
+                    section === item.section && "bg-muted hover:bg-muted",
+                    "cursor-pointer"
                   )}
                 >
                   {item.title}
@@ -169,38 +178,66 @@ export default function Dashboard() {
           </aside>
           <div className="flex-1 lg:max-w-2xl">
             <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-medium">Profile</h3>
-                <p className="text-sm text-muted-foreground">
-                  This is how others will see you on the site.
-                </p>
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-medium">Profile</h3>
+                  <p className="text-sm text-muted-foreground">
+                    This is how others will see you on the site.
+                  </p>
+                </div>
+                {!isEdit && (
+                  <Button variant="outline" onClick={() => setIsEdit(true)}>
+                    <Pencil className="h-4 w-4" />
+                    <p className="hidden sm:block">Edit</p>
+                  </Button>
+                )}
               </div>
               <Separator />
 
-              <div className="flex flex-col gap-8">
-                <div>
-                  <p className="text-sm font-medium leading-none">Salutation</p>
-                  <p className="text-sm text-muted-foreground">
-                    {user?.salutation}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium leading-none">First name</p>
-                  <p className="text-sm text-muted-foreground">
-                    {user?.firstName}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium leading-none">Last name</p>
-                  <p className="text-sm text-muted-foreground">
-                    {user?.lastName}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium leading-none">Email</p>
-                  <p className="text-sm text-muted-foreground">{user?.email}</p>
-                </div>
-              </div>
+              {section === "basic" && (
+                <FormBasic
+                  user={user}
+                  isEdit={isEdit}
+                  onDone={() => {
+                    setIsEdit(false);
+                    fetchUser();
+                  }}
+                  onCancel={() => setIsEdit(false)}
+                />
+              )}
+              {section === "spouse" && (
+                <FormSpouse
+                  user={user}
+                  isEdit={isEdit}
+                  onDone={() => {
+                    setIsEdit(false);
+                    fetchUser();
+                  }}
+                  onCancel={() => setIsEdit(false)}
+                />
+              )}
+              {section === "additional" && (
+                <FormAdditional
+                  user={user}
+                  isEdit={isEdit}
+                  onDone={() => {
+                    setIsEdit(false);
+                    fetchUser();
+                  }}
+                  onCancel={() => setIsEdit(false)}
+                />
+              )}
+              {section === "personal" && (
+                <FormPersonal
+                  user={user}
+                  isEdit={isEdit}
+                  onDone={() => {
+                    setIsEdit(false);
+                    fetchUser();
+                  }}
+                  onCancel={() => setIsEdit(false)}
+                />
+              )}
             </div>
           </div>
         </div>

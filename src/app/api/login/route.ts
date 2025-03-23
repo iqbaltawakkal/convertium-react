@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { email, password } = body;
+  const { email, password, keepMeLoggedIn } = body;
 
   // Validate input
   if (!email || !password) {
@@ -27,15 +27,13 @@ export async function POST(request: Request) {
   }
 
   // Generate JWT
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'your-secret-key', {
-    expiresIn: '2h',
-  });
+  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'your-secret-key');
 
   // Set HTTP-only cookie
   const response = NextResponse.json({ message: 'Login successful' }, { status: 200 });
   response.cookies.set('auth_token', token, {
     httpOnly: true,
-    maxAge: 2 * 60 * 60, // 2 hours
+    maxAge: keepMeLoggedIn ? 60 * 60 * 24 * 400 : 2 * 60 * 60,
     sameSite: 'strict',
     secure: process.env.NODE_ENV === 'production',
   });

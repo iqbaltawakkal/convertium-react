@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 export async function POST(request: Request) {
   const body = await request.json();
-  const { email, password, firstName, lastName, salutation } = body;
+  const { email, password } = body;
 
   // Validate input
-  if (!email || !password || !firstName || !lastName || !salutation) {
+  if (!email || !password) {
     return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
   }
 
@@ -29,11 +29,34 @@ export async function POST(request: Request) {
     data: {
       email,
       password: hashedPassword,
-      firstName,
-      lastName,
-      salutation,
+      firstName: '',
+      lastName: '',
+      salutation: '',
+      address: '',
+      country: '',
+      postalCode: '',
+      dateOfBirth: '',
+      gender: '',
+      maritalStatus: '',
+      spouseFirstName: '',
+      spouseLastName: '',
+      spouseSalutation: '',
+      hobbiesInterests: '',
+      favoriteSport: '',
+      preferredMusic: '',
+      preferredMovie: '',
     },
   });
 
-  return NextResponse.json({ message: 'Registration successful' }, { status: 201 });
+  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'your-secret-key');
+  // Set HTTP-only cookie
+  const response = NextResponse.json({ message: 'Registration successful' }, { status: 200 });
+  response.cookies.set('auth_token', token, {
+    httpOnly: true,
+    maxAge: 2 * 60 * 60,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+  });
+
+  return response
 }
